@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lothus · Rastreamento Inteligente</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;800;900&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--purple:#7B2FF7;--pink:#F7567C;--orange:#FFB347;--green:#00e5a0;--bg:#060812;--card:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);--text:#eef2ff;--muted:rgba(255,255,255,0.45)}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;line-height:1.6;overflow-x:hidden}
+#canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+.grad{background:linear-gradient(90deg,var(--purple),var(--pink),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.z{position:relative;z-index:1}
+.wrap{max-width:860px;margin:0 auto;padding:0 24px}
+.pill{display:inline-block;padding:4px 14px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;border:1px solid rgba(123,47,247,0.4);color:var(--purple);background:rgba(123,47,247,0.08)}
+
+/* TOP BAR */
+.topbar{height:3px;background:linear-gradient(90deg,var(--purple),var(--pink),var(--orange));position:relative;z-index:10}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:rgba(6,8,18,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 24px}
+.nav-in{max-width:860px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:60px}
+.nav-logo{font-family:'Poppins',sans-serif;font-size:20px;font-weight:900}
+.nav-btn{padding:8px 20px;border-radius:20px;background:linear-gradient(90deg,var(--purple),var(--pink));color:#fff;font-size:13px;font-weight:700;text-decoration:none;font-family:'Poppins',sans-serif}
+
+/* HERO */
+.hero{min-height:96vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:100px 24px 80px;position:relative;z-index:1}
+.hero h1{font-family:'Poppins',sans-serif;font-size:clamp(38px,6vw,66px);font-weight:900;line-height:1.1;letter-spacing:-2px;margin-bottom:20px}
+.hero p{font-size:17px;color:var(--muted);max-width:500px;margin:0 auto 36px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:30px;background:linear-gradient(90deg,var(--purple),var(--pink));color:#fff;font-size:15px;font-weight:700;text-decoration:none;font-family:'Poppins',sans-serif}
+.btn:hover{opacity:.88}
+.hero-tag{margin-bottom:28px;font-size:11px;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
+
+/* SECTIONS */
+.sec{padding:72px 0;position:relative;z-index:1}
+.sec-alt{background:rgba(123,47,247,0.03);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.sec h2{font-family:'Poppins',sans-serif;font-size:clamp(28px,4vw,42px);font-weight:900;letter-spacing:-1px;margin:14px 0 10px;line-height:1.15}
+.sec-sub{color:var(--muted);font-size:15px;max-width:480px;margin-bottom:40px}
+
+/* DORES */
+.dores{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:32px}
+.dor{background:rgba(247,86,124,0.06);border:1px solid rgba(247,86,124,0.2);border-radius:12px;padding:18px;display:flex;gap:12px;align-items:flex-start}
+.dor-x{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--pink);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--pink);flex-shrink:0;margin-top:1px}
+.dor p{font-size:13px;color:var(--muted);line-height:1.5}
+
+/* FLUXO */
+.flow{display:flex;flex-direction:column;gap:0;margin-top:40px}
+.flow-item{display:flex;gap:20px;align-items:flex-start;position:relative}
+.flow-item:not(:last-child)::after{content:'';position:absolute;left:22px;top:50px;bottom:-16px;width:1.5px;background:linear-gradient(180deg,var(--purple),var(--orange));opacity:0.35}
+.flow-ico{width:44px;height:44px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;border:1.5px solid;position:relative;z-index:1}
+.flow-body{padding-bottom:32px}
+.flow-body h3{font-family:'Poppins',sans-serif;font-size:16px;font-weight:700;margin-bottom:4px}
+.flow-body p{font-size:13px;color:var(--muted);line-height:1.6;max-width:560px}
+.tag{display:inline-block;margin-top:8px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 10px;border-radius:10px;font-weight:600}
+
+/* FUNIL */
+.funil{display:flex;gap:2px;margin-top:36px;flex-wrap:wrap}
+.f-step{flex:1;min-width:140px;padding:20px 16px;border-radius:12px;text-align:center}
+.f-num{font-family:'Poppins',sans-serif;font-size:15px;font-weight:900;margin-bottom:4px}
+.f-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.f-tag{font-size:10px;color:var(--muted);padding:3px 8px;border-radius:6px;background:rgba(255,255,255,0.05);display:inline-block}
+.funil-arrow{display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.15);font-size:18px;padding-top:28px}
+
+/* FAQ */
+.faq{display:flex;flex-direction:column;gap:10px;margin-top:36px}
+.faq-item{border-radius:12px;background:var(--card);border:1px solid var(--border);overflow:hidden}
+.faq-q{width:100%;padding:18px 22px;background:none;border:none;color:var(--text);font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.faq-q svg{flex-shrink:0;transition:transform .3s;color:var(--purple)}
+.faq-item.open .faq-q svg{transform:rotate(180deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease,padding .35s}
+.faq-item.open .faq-a{max-height:200px;padding:0 22px 18px}
+.faq-a p{font-size:13px;color:var(--muted);line-height:1.7}
+
+/* CTA FINAL */
+.cta-sec{text-align:center;padding:80px 24px;position:relative;z-index:1}
+.cta-sec h2{font-family:'Poppins',sans-serif;font-size:clamp(28px,5vw,48px);font-weight:900;letter-spacing:-1px;margin-bottom:14px}
+.cta-sec p{font-size:16px;color:var(--muted);margin-bottom:36px}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:28px 24px;text-align:center;position:relative;z-index:1}
+footer p{font-size:12px;color:rgba(255,255,255,0.2)}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .55s ease,transform .55s ease}
+.reveal.visible{opacity:1;transform:none}
+
+@media(max-width:600px){
+  .funil{flex-direction:column}
+  .funil-arrow{padding:0;transform:rotate(90deg)}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar"></div>
+<canvas id="canvas"></canvas>
+
+<nav>
+  <div class="nav-in">
+    <span class="nav-logo grad">Lothus</span>
+    <a href="https://wa.me/5511983661432?text=Ol%C3%A1%2C+quero+saber+mais+sobre+o+rastreamento+Lothus" class="nav-btn">Falar com a Lothus</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div>
+    <p class="hero-tag">API Oficial WhatsApp · IA · Meta Ads</p>
+    <h1>
+      Sua clínica sabe<br>de onde vem cada<br>
+      <span class="grad">paciente?</span>
+    </h1>
+    <p>Conectamos seus anúncios, WhatsApp e agendamentos em um único painel. Você vê em tempo real qual anúncio gerou cada venda.</p>
+    <a href="#como-funciona" class="btn">Ver como funciona</a>
+  </div>
+</section>
+
+<!-- PROBLEMA -->
+<section class="sec sec-alt" id="problema">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="pill">O problema</div>
+      <h2>Bom produto não escala<br><span class="grad">sem dados.</span></h2>
+      <p class="sec-sub">Você investe em anúncio, o lead chega e some. Sem rastreamento, é impossível saber o que está funcionando de verdade.</p>
+    </div>
+    <div class="dores reveal">
+      <div class="dor"><div class="dor-x">✕</div><p>Lead entra pelo WhatsApp e ninguém sabe de qual anúncio veio</p></div>
+      <div class="dor"><div class="dor-x">✕</div><p>Agendamento no sistema sem vínculo com a campanha</p></div>
+      <div class="dor"><div class="dor-x">✕</div><p>Gasto no Meta Ads sem saber qual anúncio gerou venda</p></div>
+      <div class="dor"><div class="dor-x">✕</div><p>Decisões de investimento baseadas em feeling</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- COMO FUNCIONA -->
+<section class="sec" id="como-funciona">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="pill">Como funciona</div>
+      <h2>Três fontes. Um painel.<br><span class="grad">Tudo automático.</span></h2>
+    </div>
+    <div class="flow reveal">
+
+      <div class="flow-item">
+        <div class="flow-ico" style="background:rgba(123,47,247,0.12);border-color:var(--purple);color:var(--purple)">🎯</div>
+        <div class="flow-body">
+          <h3>Meta Ads dispara o anúncio</h3>
+          <p>Cada criativo tem rastreamento individual. Sabemos exatamente qual anúncio gerou cada lead.</p>
+          <span class="tag" style="background:rgba(123,47,247,0.1);color:var(--purple)">Automático · ao vivo</span>
+        </div>
+      </div>
+
+      <div class="flow-item">
+        <div class="flow-ico" style="background:rgba(0,229,160,0.1);border-color:var(--green);color:var(--green)">⚡</div>
+        <div class="flow-body">
+          <h3>IA captura via <span style="color:var(--green)">API Oficial do WhatsApp</span></h3>
+          <p>Quando o lead clica e abre o WhatsApp, nosso sistema captura o telefone e o anúncio de origem automaticamente. Sem bots, sem risco de bloqueio. 24h por dia.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+            <span class="tag" style="background:rgba(247,86,124,0.1);color:var(--pink)">N8N + IA · 24/7</span>
+            <span class="tag" style="background:rgba(0,229,160,0.1);color:var(--green);border:1px solid rgba(0,229,160,0.25)">✓ API Oficial WhatsApp</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-item">
+        <div class="flow-ico" style="background:rgba(255,179,71,0.1);border-color:var(--orange);color:var(--orange)">🗄️</div>
+        <div class="flow-body">
+          <h3>Dados gravados em tempo real</h3>
+          <p>Telefone, anúncio, conjunto e campanha de cada lead ficam salvos automaticamente no banco de dados.</p>
+          <span class="tag" style="background:rgba(255,179,71,0.1);color:var(--orange)">Banco de dados em nuvem</span>
+        </div>
+      </div>
+
+      <div class="flow-item" style="padding-bottom:0">
+        <div class="flow-ico" style="background:rgba(123,47,247,0.12);border-color:var(--purple);color:var(--purple)">🖥️</div>
+        <div class="flow-body" style="padding-bottom:0">
+          <h3>Painel em tempo real</h3>
+          <p>Você vê funil completo, qual anúncio gerou cada agendamento e cada venda. Acessa pelo celular, de qualquer lugar, sem instalar nada.</p>
+          <span class="tag" style="background:rgba(123,47,247,0.1);color:var(--purple)">Dashboard · acesso online</span>
+        </div>
+      </div>
+
+      <!-- DESTAQUE OTIMIZAÇÃO -->
+      <div style="margin-top:32px;padding:24px 28px;border-radius:14px;border:1px solid rgba(0,229,160,0.3);background:rgba(0,229,160,0.05)">
+        <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--green);font-weight:600;margin-bottom:8px">O que muda na prática</p>
+        <p style="font-family:'Poppins',sans-serif;font-size:18px;font-weight:800;color:#fff;line-height:1.3">Otimização com base em conversões reais: agendamento, comparecimento e venda.</p>
+        <p style="font-size:13px;color:var(--muted);margin-top:8px">Não em cliques. Não em leads. Em resultado real.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FUNIL REAL -->
+<section class="sec sec-alt" id="funil">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="pill">Exemplo real</div>
+      <h2>Do clique à venda,<br><span class="grad">tudo rastreado.</span></h2>
+      <p class="sec-sub">Cada etapa com a origem confirmada. Você sabe qual anúncio gerou qual resultado.</p>
+    </div>
+    <div class="funil reveal">
+      <div class="f-step" style="background:rgba(123,47,247,0.1);border:1px solid rgba(123,47,247,0.3)">
+        <div class="f-num" style="color:var(--purple)">Lead entrou</div>
+        <div class="f-lbl" style="color:var(--purple)">WhatsApp</div>
+        <div class="f-tag">via anúncio "PEIM 04"</div>
+      </div>
+      <div class="funil-arrow">›</div>
+      <div class="f-step" style="background:rgba(247,86,124,0.08);border:1px solid rgba(247,86,124,0.3)">
+        <div class="f-num" style="color:var(--pink)">Agendou</div>
+        <div class="f-lbl" style="color:var(--pink)">Confirmado</div>
+        <div class="f-tag">origem: PEIM 04</div>
+      </div>
+      <div class="funil-arrow">›</div>
+      <div class="f-step" style="background:rgba(255,179,71,0.08);border:1px solid rgba(255,179,71,0.3)">
+        <div class="f-num" style="color:var(--orange)">Compareceu</div>
+        <div class="f-lbl" style="color:var(--orange)">Rastreado</div>
+        <div class="f-tag">origem: PEIM 04</div>
+      </div>
+      <div class="funil-arrow">›</div>
+      <div class="f-step" style="background:rgba(0,229,160,0.08);border:1px solid rgba(0,229,160,0.3)">
+        <div class="f-num" style="color:var(--green)">Vendeu</div>
+        <div class="f-lbl" style="color:var(--green)">R$2.600</div>
+        <div class="f-tag">origem PEIM 04 ✓</div>
+      </div>
+    </div>
+    <p style="text-align:center;color:var(--muted);font-size:13px;margin-top:20px">Tudo rastreado. Tudo com origem confirmada.</p>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="sec" id="faq">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="pill">Dúvidas</div>
+      <h2>Perguntas<br><span class="grad">frequentes.</span></h2>
+    </div>
+    <div class="faq reveal">
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="fq(this)">
+          Preciso mudar algo no meu WhatsApp?
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="faq-a"><p>Não. A integração é feita pela Lothus sem nenhuma mudança no seu fluxo atual. Adicionamos uma camada de rastreamento invisível que funciona em paralelo.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="fq(this)">
+          Funciona com qualquer número de WhatsApp?
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="faq-a"><p>Funciona com WhatsApp Business conectado via API Oficial. Quando o lead clica no anúncio e abre a conversa, o número é capturado automaticamente. Não depende de formulário nem de preenchimento manual.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="fq(this)">
+          Posso acessar o painel pelo celular?
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="faq-a"><p>Sim. O painel é uma página web com link fixo. Você acessa pelo celular ou computador, de qualquer lugar, sem instalar nada.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="fq(this)">
+          É possível expandir para outras unidades?
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="faq-a"><p>Sim. A estrutura foi desenhada para escalar. Cada unidade recebe seu próprio painel e rastreamento independente.</p></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-sec" id="cta">
+  <div class="pill" style="margin-bottom:20px">Próximo passo</div>
+  <h2>Chega de crescer<br><span class="grad">no improviso.</span></h2>
+  <p>Saiba de onde vem cada paciente, qual anúncio gerou cada venda.</p>
+  <a href="https://wa.me/5511983661432?text=Ol%C3%A1%2C+quero+saber+mais+sobre+o+rastreamento+Lothus" class="btn" style="font-size:15px">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    Falar com a Lothus
+  </a>
+</section>
+
+<footer>
+  <p class="grad" style="font-family:'Poppins',sans-serif;font-weight:900;font-size:16px;display:block;margin-bottom:6px">Lothus</p>
+  <p>Sistema de Rastreamento Inteligente · API Oficial WhatsApp · IA · Meta Ads</p>
+  <p style="margin-top:4px">Criado por Douglas Felipe · Agência Lothus © 2026</p>
+</footer>
+
+<script>
+(function(){
+  var cv=document.getElementById('canvas'),cx=cv.getContext('2d');
+  var W=0,H=0,M={x:-999,y:-999},P=[];
+  function rsz(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight}
+  rsz();window.addEventListener('resize',rsz);
+  document.addEventListener('mousemove',function(e){M.x=e.clientX;M.y=e.clientY});
+  document.addEventListener('mouseleave',function(){M.x=-999;M.y=-999});
+  document.addEventListener('touchmove',function(e){var t=e.touches[0];M.x=t.clientX;M.y=t.clientY},{passive:true});
+  document.addEventListener('touchstart',function(e){var t=e.touches[0];M.x=t.clientX;M.y=t.clientY},{passive:true});
+  document.addEventListener('touchend',function(){setTimeout(function(){M.x=-999;M.y=-999},800)},{passive:true});
+  var n=window.innerWidth<=600?40:75;
+  for(var i=0;i<n;i++)P.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,vx:(Math.random()-.5)*.38,vy:(Math.random()-.5)*.38,r:Math.random()*1.4+.6});
+  function tick(){
+    cx.clearRect(0,0,W,H);
+    for(var i=0;i<P.length;i++){var p=P[i];p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;var dm=Math.hypot(p.x-M.x,p.y-M.y);if(dm<140){p.x+=(p.x-M.x)*.016;p.y+=(p.y-M.y)*.016}}
+    for(var i=0;i<P.length;i++){
+      for(var j=i+1;j<P.length;j++){var dx=P[i].x-P[j].x,dy=P[i].y-P[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<130){cx.strokeStyle='rgba(123,47,247,'+(1-d/130)*.18+')';cx.lineWidth=.6;cx.beginPath();cx.moveTo(P[i].x,P[i].y);cx.lineTo(P[j].x,P[j].y);cx.stroke()}}
+      var dm2=Math.hypot(P[i].x-M.x,P[i].y-M.y);
+      if(dm2<170){cx.strokeStyle='rgba(247,86,124,'+(1-dm2/170)*.45+')';cx.lineWidth=.8;cx.beginPath();cx.moveTo(P[i].x,P[i].y);cx.lineTo(M.x,M.y);cx.stroke()}
+    }
+    for(var i=0;i<P.length;i++){var dm3=Math.hypot(P[i].x-M.x,P[i].y-M.y);cx.beginPath();cx.arc(P[i].x,P[i].y,P[i].r,0,Math.PI*2);cx.fillStyle='rgba(123,47,247,'+(dm3<170?.88:.28)+')';cx.fill()}
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+
+function fq(btn){var it=btn.parentElement,open=it.classList.contains('open');document.querySelectorAll('.faq-item').forEach(function(e){e.classList.remove('open')});if(!open)it.classList.add('open')}
+
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target)}})},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(function(el){io.observe(el)});
+</script>
+</body>
+</html>
